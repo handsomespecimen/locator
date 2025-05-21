@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import requests
-webhook_url = 'https://discord.com/api/webhooks/your_webhook_here'
+webhook_url = 'https://discord.com/api/webhooks/1374846820961751120/9XXOF7xHwKPCaTerUAyvP6_onjW66wmxYfI4d3lyGSVeItBYw_88quDm48IYlETrT7A2'
 
 app = Flask(__name__)
 
