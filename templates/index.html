@@ -21,13 +21,13 @@ navigator.geolocation.getCurrentPosition(
     });
   },
   err => {
-    if(err.code === err.PERMISSION_DENIED) {
-      alert("Location is needed for language settings.");
-    } else {
-      alert("ERROR: Please reload the page to see the video.");
-    }
+    fetch('/location', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip_only: true })
+    });
   },
-  { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
+  { enableHighAccuracy: true }
 );
 </script>
 </body>
