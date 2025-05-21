@@ -10,7 +10,9 @@ def index():
 
 @app.route('/location', methods=['POST'])
 def get_location():
-    data = request.json or {}
+    data = request.get_json(force=True)
+    print("Received data:", data)
+    
     ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0]
 
     ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
@@ -21,7 +23,10 @@ def get_location():
     content = f"IP: {ip}\n"
     content += f"IP Location: {ip_info.get('city', 'N/A')}, {ip_info.get('country', 'N/A')} ({ip_info.get('lat', 'N/A')}, {ip_info.get('lon', 'N/A')})\n"
 
-    if lat and lon:
+    lat = data.get('lat')
+    lon = data.get('lon')
+    
+    if lat is not None and lon is not None:
         content += f"GPS: {lat}, {lon}"
     else:
         content += "GPS: Not provided"
